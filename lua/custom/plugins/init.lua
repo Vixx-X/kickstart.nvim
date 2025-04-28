@@ -3,6 +3,18 @@
 --
 -- See the kickstart.nvim README for more information
 return {
+  -- tmux nav
+  {
+    'christoomey/vim-tmux-navigator',
+    lazy = false,
+  },
+
+  {
+    'xiyaowong/transparent.nvim',
+    lazy = false,
+    priority = 1000,
+  },
+
   {
     -- Copilot
     -- 'github/copilot.vim',
@@ -16,10 +28,7 @@ return {
   },
 
   {
-    'zbirenbaum/copilot-cmp',
-    config = function()
-      require('copilot_cmp').setup()
-    end,
+    'giuxtaposition/blink-cmp-copilot',
   },
 
   {
