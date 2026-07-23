@@ -703,6 +703,77 @@ do
     -- But for many setups, the LSP (`ts_ls`) will work just fine
     -- ts_ls = {},
 
+    -- CUSTOM CODE START
+    -- TypeScript / JavaScript (node + bun).
+    --  `vtsls` wraps the official TypeScript server and is preferred over
+    --  `ts_ls` for better inlay hints and faster completion.
+    --  It picks up the project's own TypeScript from node_modules when present,
+    --  which is what you want for both node and bun projects.
+    vtsls = {
+      settings = {
+        vtsls = {
+          -- Use the workspace's TypeScript version rather than the bundled one
+          autoUseWorkspaceTsdk = true,
+          experimental = {
+            completion = { enableServerSideFuzzyMatch = true },
+          },
+        },
+        typescript = {
+          -- Update import paths automatically when you move/rename a file
+          updateImportsOnFileMove = { enabled = 'always' },
+          suggest = { completeFunctionCalls = true },
+          -- Inlay hints: toggle them in a buffer with `<leader>th`
+          inlayHints = {
+            parameterNames = { enabled = 'literals' },
+            parameterTypes = { enabled = true },
+            variableTypes = { enabled = true },
+            propertyDeclarationTypes = { enabled = true },
+            functionLikeReturnTypes = { enabled = true },
+            enumMemberValues = { enabled = true },
+          },
+        },
+        javascript = {
+          updateImportsOnFileMove = { enabled = 'always' },
+          suggest = { completeFunctionCalls = true },
+          inlayHints = {
+            parameterNames = { enabled = 'literals' },
+            parameterTypes = { enabled = true },
+            variableTypes = { enabled = true },
+            propertyDeclarationTypes = { enabled = true },
+            functionLikeReturnTypes = { enabled = true },
+            enumMemberValues = { enabled = true },
+          },
+        },
+      },
+    },
+
+    -- ESLint. Only attaches when the project actually has an eslint config,
+    --  so it stays out of the way in projects that don't use it.
+    --  `:LspEslintFixAll` applies all autofixes in the buffer.
+    eslint = {},
+
+    -- Java (Eclipse JDT language server).
+    --  Detects gradle/maven/plain projects and keeps a per-project workspace
+    --  under ~/.local/share/nvim/jdtls. First open of a project is slow while
+    --  it indexes - watch the bottom-right progress indicator.
+    jdtls = {
+      settings = {
+        java = {
+          signatureHelp = { enabled = true },
+          contentProvider = { preferred = 'fernflower' }, -- decompile .class files
+          -- Suggest imports for symbols you haven't imported yet
+          completion = {
+            importOrder = { 'java', 'javax', 'com', 'org' },
+          },
+          sources = {
+            organizeImports = { starThreshold = 9999, staticStarThreshold = 9999 },
+          },
+          inlayHints = { parameterNames = { enabled = 'all' } },
+        },
+      },
+    },
+    -- CUSTOM CODE END
+
     stylua = {}, -- Used to format Lua code
 
     -- Special Lua Config, as recommended by neovim help docs
@@ -760,6 +831,9 @@ do
   local ensure_installed = vim.tbl_keys(servers or {})
   vim.list_extend(ensure_installed, {
     -- You can add other tools here that you want Mason to install
+    -- CUSTOM CODE START
+    'prettierd', -- Fast prettier daemon, used by conform for the JS/TS family
+    -- CUSTOM CODE END
   })
 
   require('mason-tool-installer').setup { ensure_installed = ensure_installed }
@@ -805,8 +879,21 @@ do
 
       -- CUSTOM CODE START
       python = { 'isort', 'black' },
+
+      -- Prettier for the whole TypeScript/JavaScript family.
+      --  `prettierd` is a long-running daemon and much faster; it falls back
+      --  to plain `prettier` if the daemon isn't installed.
       javascript = { 'prettierd', 'prettier', stop_after_first = true },
+      javascriptreact = { 'prettierd', 'prettier', stop_after_first = true },
+      typescript = { 'prettierd', 'prettier', stop_after_first = true },
+      typescriptreact = { 'prettierd', 'prettier', stop_after_first = true },
       json = { 'prettierd', 'prettier', stop_after_first = true },
+      jsonc = { 'prettierd', 'prettier', stop_after_first = true },
+      css = { 'prettierd', 'prettier', stop_after_first = true },
+      html = { 'prettierd', 'prettier', stop_after_first = true },
+      yaml = { 'prettierd', 'prettier', stop_after_first = true },
+      markdown = { 'prettierd', 'prettier', stop_after_first = true },
+      -- Java formatting is handled by jdtls itself via the LSP fallback.
       -- CUSTOM CODE END
     },
   }
@@ -926,7 +1013,17 @@ do
   vim.pack.add { { src = gh 'nvim-treesitter/nvim-treesitter', version = 'main' } }
 
   -- Ensure basic parsers are installed
-  local parsers = { 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc' }
+  -- CUSTOM CODE START
+  -- stylua: ignore
+  local parsers = {
+    'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc',
+    -- TypeScript / JavaScript and friends
+    -- NOTE: there is no separate `jsonc` parser; the `json` one handles it.
+    'typescript', 'tsx', 'javascript', 'jsdoc', 'json', 'css', 'yaml',
+    -- Java
+    'java',
+  }
+  -- CUSTOM CODE END
   require('nvim-treesitter').install(parsers)
 
   ---@param buf integer
