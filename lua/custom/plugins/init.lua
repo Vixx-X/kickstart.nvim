@@ -51,4 +51,58 @@ return {
       require('gitblame').setup()
     end,
   },
+
+  {
+    -- Avante (Cursor-like AI assistant)
+    'yetone/avante.nvim',
+    event = 'VeryLazy',
+    build = 'make',
+    opts = {
+      provider = 'claude', -- default provider
+      providers = {
+        claude = {
+          model = 'claude-sonnet-4-20250514',
+        },
+        copilot = {
+          model = 'claude-3.5-sonnet', -- or 'gpt-4o'
+        },
+      },
+    },
+    dependencies = {
+      'nvim-treesitter/nvim-treesitter',
+      'stevearc/dressing.nvim',
+      'nvim-lua/plenary.nvim',
+      'MunifTanjim/nui.nvim',
+      'nvim-tree/nvim-web-devicons',
+      'zbirenbaum/copilot.lua',
+      {
+        'MeanderingProgrammer/render-markdown.nvim',
+        opts = { file_types = { 'markdown', 'Avante' } },
+        ft = { 'markdown', 'Avante' },
+      },
+    },
+  },
+
+  {
+    -- MCPHub (MCP server management)
+    'ravitemer/mcphub.nvim',
+    dependencies = {
+      'nvim-lua/plenary.nvim',
+    },
+    build = 'npm install -g mcp-hub@latest',
+    config = function()
+      require('mcphub').setup()
+    end,
+  },
+
+  {
+    -- Noice (UI for messages, cmdline, popupmenu)
+    'folke/noice.nvim',
+    event = 'VeryLazy',
+    opts = {},
+    dependencies = {
+      'MunifTanjim/nui.nvim',
+      'rcarriga/nvim-notify',
+    },
+  },
 }
