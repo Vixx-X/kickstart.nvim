@@ -827,6 +827,35 @@ do
     },
   }
 
+  -- CUSTOM CODE START
+  -- Servers that work fine on lspconfig's defaults and need no settings of
+  -- their own. Listing them here is what actually enables them - installing a
+  -- server through Mason does NOT attach it to any buffer.
+  --
+  -- Deliberately excluded because they duplicate a better server already
+  -- configured above, and two servers on one filetype means duplicate
+  -- diagnostics and completions:
+  --   ts_ls                 -> superseded by vtsls
+  --   java_language_server  -> superseded by jdtls
+  for _, name in ipairs {
+    'bashls', -- Bash / sh
+    'pyright', -- Python
+    'gopls', -- Go
+    'rust_analyzer', -- Rust
+    'clangd', -- C / C++
+    'cssls', -- CSS
+    'yamlls', -- YAML
+    'dockerls', -- Dockerfile
+    'docker_compose_language_service', -- docker-compose.yml
+    'tailwindcss', -- Tailwind class completion
+    'astro', -- Astro
+    'helm_ls', -- Helm charts
+    'sqls', -- SQL
+  } do
+    servers[name] = servers[name] or {}
+  end
+  -- CUSTOM CODE END
+
   vim.pack.add {
     gh 'neovim/nvim-lspconfig',
     gh 'mason-org/mason.nvim',
