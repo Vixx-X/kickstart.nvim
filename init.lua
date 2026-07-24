@@ -752,6 +752,22 @@ do
     --  `:LspEslintFixAll` applies all autofixes in the buffer.
     eslint = {},
 
+    -- Kotlin (fwcd/kotlin-language-server).
+    --  Neovim detects the `kotlin` filetype for .kt/.kts natively, so the
+    --  kotlin-vim plugin its docs mention is not needed.
+    --
+    --  Needs a Gradle/Maven root marker (build.gradle.kts, settings.gradle.kts,
+    --  pom.xml, ...) to attach - it will not start on a loose .kt file.
+    --  First open of a project is slow while it resolves the build classpath.
+    kotlin_language_server = {
+      -- lspconfig derives storagePath from whatever buffer happens to be
+      -- current when the module loads, which scatters caches unpredictably.
+      -- Pin it to one stable cache directory instead.
+      init_options = {
+        storagePath = vim.fn.stdpath 'cache' .. '/kotlin-language-server',
+      },
+    },
+
     -- Java (Eclipse JDT language server).
     --  Detects gradle/maven/plain projects and keeps a per-project workspace
     --  under ~/.local/share/nvim/jdtls. First open of a project is slow while
@@ -1035,8 +1051,8 @@ do
     -- TypeScript / JavaScript and friends
     -- NOTE: there is no separate `jsonc` parser; the `json` one handles it.
     'typescript', 'tsx', 'javascript', 'jsdoc', 'json', 'css', 'yaml',
-    -- Java
-    'java',
+    -- JVM languages
+    'java', 'kotlin',
   }
   -- CUSTOM CODE END
   require('nvim-treesitter').install(parsers)
