@@ -99,7 +99,10 @@ do
   vim.g.maplocalleader = ' '
 
   -- Set to true if you have a Nerd Font installed and selected in the terminal
-  vim.g.have_nerd_font = false
+  -- CUSTOM CODE START
+  -- Ghostty is configured with `JetBrainsMono Nerd Font`, so icons render.
+  vim.g.have_nerd_font = true
+  -- CUSTOM CODE END
 
   -- [[ Setting options ]]
   --  See `:help vim.o`
@@ -878,6 +881,8 @@ do
     -- You can add other tools here that you want Mason to install
     -- CUSTOM CODE START
     'prettierd', -- Fast prettier daemon, used by conform for the JS/TS family
+    'black', -- Python formatter, referenced by conform's formatters_by_ft
+    'isort', -- Python import sorter, ditto
     -- CUSTOM CODE END
   })
 
