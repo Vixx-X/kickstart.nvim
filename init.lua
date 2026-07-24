@@ -963,20 +963,35 @@ do
       -- By default, you may press `<c-space>` to show the documentation.
       -- Optionally, set `auto_show = true` to show the documentation after a delay.
       -- CUSTOM CODE START
-      trigger = { show_in_snippet = false },
+      --  `prefetch_on_insert = false` stops a completion request firing on
+      --  every insert-mode entry, which matters when a local model is doing
+      --  the work. Recommended by minuet.
+      trigger = { show_in_snippet = false, prefetch_on_insert = false },
       -- CUSTOM CODE END
       documentation = { auto_show = false, auto_show_delay_ms = 500 },
     },
 
     sources = {
       -- CUSTOM CODE START
-      default = { 'lsp', 'path', 'snippets', 'copilot' },
+      default = { 'lsp', 'path', 'snippets', 'minuet', 'copilot' },
       providers = {
-        -- Registered by `lua/custom/plugins/copilot.lua`
+        -- Local Ollama model, configured by `lua/custom/plugins/minuet.lua`.
+        --  Higher score_offset than copilot, so local suggestions rank first.
+        minuet = {
+          name = 'minuet',
+          module = 'minuet.blink',
+          score_offset = 100,
+          async = true,
+          -- Local inference is ~200ms warm, but the first request after the
+          -- model is evicted from VRAM pays a cold load.
+          timeout_ms = 3000,
+        },
+        -- Registered by `lua/custom/plugins/copilot.lua`. Kept as a fallback
+        --  behind the local model.
         copilot = {
           name = 'copilot',
           module = 'blink-cmp-copilot',
-          score_offset = 100,
+          score_offset = 50,
           async = true,
         },
       },
