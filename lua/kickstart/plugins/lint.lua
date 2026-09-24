@@ -7,6 +7,13 @@ lint.linters_by_ft = {
   markdown = { 'markdownlint' }, -- Make sure to install `markdownlint` via mason / npm
 }
 
+-- CUSTOM CODE START
+-- MD013 (line length) and MD060 (table column style) fire on nearly every
+--  prose line and table, drowning out real issues. `--disable` is variadic,
+--  so it must stay after `--stdin`.
+lint.linters.markdownlint.args = { '--stdin', '--disable', 'MD013', 'MD060' }
+-- CUSTOM CODE END
+
 -- To allow other plugins to add linters to require('lint').linters_by_ft,
 -- instead set linters_by_ft like this:
 -- lint.linters_by_ft = lint.linters_by_ft or {}
