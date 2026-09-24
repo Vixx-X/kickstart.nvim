@@ -755,6 +755,13 @@ do
     --  `:LspEslintFixAll` applies all autofixes in the buffer.
     eslint = {},
 
+    -- lspconfig's defaults include markdown, where it falls back to the git
+    --  root as workspace. In a large monorepo its file watcher then crawls the
+    --  whole tree on the main thread and freezes the editor.
+    tailwindcss = {
+      filetypes = { 'html', 'css', 'scss', 'javascript', 'javascriptreact', 'typescript', 'typescriptreact', 'astro', 'vue', 'svelte' },
+    },
+
     -- Kotlin (fwcd/kotlin-language-server).
     --  Neovim detects the `kotlin` filetype for .kt/.kts natively, so the
     --  kotlin-vim plugin its docs mention is not needed.
